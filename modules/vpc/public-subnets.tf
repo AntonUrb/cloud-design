@@ -1,42 +1,39 @@
-resource "aws_subnet" "public-zone1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = local.zone1
+resource "aws_subnet" "public" {
+  count = length(var.public_subnets)
+
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnets[count.index]
+  availability_zone       = var.az[count.index]
   map_public_ip_on_launch = true
 
   tags = {
-    "Name"                                                 = "${local.env}-public-${local.zone1}"
-    "kubernetes.io/role/internal-elb"                      = "1"
-    "kubernetes.io/cluster/${local.env}-${local.eks_name}" = "owned"
-  }
-}
-
-resource "aws_subnet" "public-zone2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.4.0/24"
-  availability_zone = local.zone1
-  map_public_ip_on_launch = true
-
-  tags = {
-    "Name"                                                 = "${local.env}-public-${local.zone2}"
-    "kubernetes.io/role/internal-elb"                      = "1"
-    "kubernetes.io/cluster/${local.env}-${local.eks_name}" = "owned"
+    "Name"                                             = "${var.env}-public-${var.az[count.index]}"
+    "kubernetes.io/role/internal-elb"                  = "1"
+    "kubernetes.io/cluster/${var.env}-${var.eks_name}" = "owned"
   }
 }
 
 resource "aws_eip" "nat" {
+  count = length(var.public_subnets)
+
   domain = "vpc"
 
   tags = {
-    Name = "${local.env}-nat"
+    Name = "${var.env}-nat-eip-${count.index}"
   }
 }
 
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public_zone1.id
 
-  depends_on = [ aws_internet_gateway.igw ]
+resource "aws_nat_gateway" "nat" {
+  count = length(var.public_subnets)
+
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  depends_on = [aws_internet_gateway.igw]
+  tags = {
+    Name = "${var.env}-nat-${count.index}"
+  }
 }
 
 resource "aws_route_table" "public-rtable" {
@@ -44,12 +41,14 @@ resource "aws_route_table" "public-rtable" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
 }
 
 resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
+  count = length(var.public_subnets)
+
+  subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public-rtable.id
 }
 

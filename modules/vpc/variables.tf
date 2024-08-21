@@ -1,26 +1,34 @@
-locals {
-  env      = "staging"
-  region   = "eu-north-1"
-  zone1    = "eu-north-1a"
-  zone2    = "eu-north-1b"
-  eks_name = "cluster"
-  version  = "1.30"
-}
-
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   type        = string
-  default     = "10.0.0.0/16"
 }
 
 variable "env" {
   description = "The environment name (e.g., dev, stage, prod)"
   type        = string
-  default     = "stage"
 }
 
-variable "all_traffic-cidr" {
-  description = "The CIDR block for all traffic"
-  type = string
-  default     = "0.0.0.0/0"
+variable "az" {
+  description = "The first availability zone"
+  type        = list(string)
+}
+
+variable "eks_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+}
+
+variable "eks_version" {
+  description = "The version of the EKS cluster"
+  type        = string
+}
+
+variable "public_subnets" {
+  description = "List of public subnets for the VPC"
+  type        = list(string)
+}
+
+variable "private_subnets" {
+  description = "List of private subnets for the VPC"
+  type        = list(string)
 }
