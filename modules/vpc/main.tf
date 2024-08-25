@@ -16,3 +16,16 @@ resource "aws_internet_gateway" "igw" {
     Name = "${var.env}-igw"
   }
 }
+
+# data "aws_subnet" "id" {
+#   for_each = toset(var.private_subnets)
+
+#   cidr_block = each.key
+# }
+
+# locals {
+#   subnet_ids = tomap({
+#     for cidr, subnet in data.aws_subnet.id : cidr => subnet.id
+#   })
+# }
+
