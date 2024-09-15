@@ -28,7 +28,7 @@ module "eks" {
 
 module "iam" {
   source = "./modules/iam"
-
+  
   eks_cluster_name = module.eks.cluster_name
 }
 
