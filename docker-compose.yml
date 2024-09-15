@@ -1,0 +1,145 @@
+services:
+  inventory-db:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/db.Dockerfile
+      args:
+        - DB_SCRIPT_PATH=${DB_SCRIPT_PATH}
+    environment:
+      POSTGRES_DB: ${DB_INVENTORY_NAME}
+      POSTGRES_USER: ${DB_INVENTORY_UNAME}
+      POSTGRES_PASSWORD: ${DB_INVENTORY_PASSW}
+      CONTAINER_NAME: ${DB_INVENTORY_HOST}
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: "on-failure"
+
+  billing-db:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/db.Dockerfile
+      args:
+        - DB_SCRIPT_PATH=${DB_SCRIPT_PATH}
+    environment:
+      POSTGRES_DB: ${DB_BILLING_NAME}
+      POSTGRES_USER: ${DB_BILLING_UNAME}
+      POSTGRES_PASSWORD: ${DB_BILLING_PASSW}
+      CONTAINER_NAME: ${DB_BILLING_HOST}
+    volumes:
+      - billing-db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    restart: "on-failure"
+
+  rabbit-queue:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/rabbit.Dockerfile
+      args:
+        - QUEUE_SCRIPT_PATH=${QUEUE_SCRIPT_PATH}
+    environment:
+      QUEUE_UNAME: ${QUEUE_UNAME}
+      QUEUE_PASSW: ${QUEUE_PASSW}
+    volumes:
+      - 'rabbit-queue-data:/var/lib/rabbit-queue'
+    networks:
+      - backend
+    restart: "on-failure"
+
+  inventory-app:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/app.Dockerfile
+      args:
+        - APP_PATH=${INVENTORY_PATH}
+    environment:
+      DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
+      DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
+      DB_INVENTORY_UNAME: ${DB_INVENTORY_UNAME}
+      DB_INVENTORY_PASSW: ${DB_INVENTORY_PASSW}
+      DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
+      INVENTORY_PORT: ${INVENTORY_PORT}
+      INVENTORY_HOST: ${INVENTORY_HOST}
+    depends_on:
+      - inventory-db
+    networks:
+      - backend
+    restart: "on-failure"
+    command: >
+      sh -c "until nc -z ${DB_INVENTORY_HOST} ${DB_INVENTORY_PORT}; do
+            echo 'Waiting for the database...';
+            sleep 1;
+           done;
+           sleep 5
+           npm start"
+
+  billing-app:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/app.Dockerfile
+      args:
+        - APP_PATH=${BILLING_PATH}
+    environment:
+      DB_BILLING_NAME: ${DB_BILLING_NAME}
+      DB_BILLING_PORT: ${DB_BILLING_PORT}
+      DB_BILLING_UNAME: ${DB_BILLING_UNAME}
+      DB_BILLING_PASSW: ${DB_BILLING_PASSW}
+      DB_BILLING_HOST: ${DB_BILLING_HOST}
+      QUEUE_HOST: ${QUEUE_HOST}
+      QUEUE_UNAME: ${QUEUE_UNAME}
+      QUEUE_PASSW: ${QUEUE_PASSW}
+      QUEUE_NAME: ${QUEUE_NAME}
+      QUEUE_PORT: ${QUEUE_PORT}
+      BILLING_PORT: ${BILLING_PORT}
+      BILLING_HOST: ${BILLING_HOST}
+    depends_on:
+      - billing-db
+      - rabbit-queue
+    networks:
+      - backend
+    restart: "on-failure"
+    command: >
+      sh -c "until nc -z ${DB_BILLING_HOST} ${DB_BILLING_PORT}; do
+            echo 'Waiting for the database...';
+            sleep 5;
+           done;
+           npm start"    
+
+  gateway-app:
+    build: 
+      context: ./
+      dockerfile: ./dockerfiles/app.Dockerfile
+      args:
+        - APP_PATH=${GATEWAY_PATH}
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    environment:
+      INVENTORY_HOST: ${INVENTORY_HOST}
+      INVENTORY_PORT: ${INVENTORY_PORT}
+      GATEWAY_HOST: ${GATEWAY_HOST}
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      QUEUE_PORT: ${QUEUE_PORT}
+      QUEUE_UNAME: ${QUEUE_UNAME}
+      QUEUE_PASSW: ${QUEUE_PASSW}
+      QUEUE_NAME: ${QUEUE_NAME}
+      QUEUE_HOST: ${QUEUE_HOST} 
+    depends_on:
+      - inventory-app
+      - billing-app
+      - rabbit-queue
+    networks:
+      - backend
+    volumes:
+      - 'api-gateway-data:/var/lib/gateway-app'
+    restart: "on-failure"
+
+volumes:
+  inventory-db-data:
+  billing-db-data:
+  rabbit-queue-data:
+  api-gateway-data:
+
+networks:
+  backend:
