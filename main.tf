@@ -26,6 +26,12 @@ module "eks" {
   }
 }
 
+module "iam" {
+  source = "./modules/iam"
+
+  eks_cluster_name = module.eks.cluster_name
+}
+
 terraform {
   backend "s3" {
     bucket         = "cloud-design"

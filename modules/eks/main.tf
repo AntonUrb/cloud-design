@@ -62,3 +62,4 @@ resource "aws_eks_node_group" "general" {
 #   id = var.private_subnet_ids
 
 # }
+

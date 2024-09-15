@@ -1,39 +1,32 @@
-# resource "aws_iam_role" "eks" {
-#   name = "${var.env}-${var.eks_name}-eks-cluster"
+resource "aws_iam_user" "developer" {
+  name = "developer"
+}
 
-#   assume_role_policy = <<POLICY
-#   {
-#     "Version": "2012-10-17",
-#     "Statement": [
-#         {
-#             "Effect": "Allow",
-#             "Action": "sts:AssumeRole",
-#             "Principal": {
-#                 "Service": "eks.amazon.com"
-#             }
-#         }
-#     ]
-# }
-# POLICY
-# }
+resource "aws_iam_policy" "developer_eks" {
+  name = "AmazonEKSDeveloperPolicy"
 
-# resource "aws_iam_role_policy_attachment" "eks" {
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-#   role       = aws_iam_role.eks.name
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters",
+        ]
+        Resource = "*"
+      },
+    ]
+  })
+}
 
-# resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy" {
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-#   role       = aws_iam_role.nodes.name
-# }
+resource "aws_iam_user_policy_attachment" "developer_eks" {
+  user       = aws_iam_user.developer.name
+  policy_arn = aws_iam_policy.developer_eks.arn
+}
 
-# resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-#   role       = aws_iam_role.nodes.name
-# }
-
-# resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-#   role       = aws_iam_role.nodes.name
-# }
-
+resource "aws_eks_access_entry" "developer" {
+  cluster_name      = var.eks_cluster_name
+  principal_arn     = aws_iam_user.developer.arn
+  kubernetes_groups = ["my-viewer"]
+}
