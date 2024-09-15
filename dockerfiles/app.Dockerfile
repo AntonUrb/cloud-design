@@ -11,7 +11,7 @@ RUN apk add --no-cache nodejs npm
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files
-COPY ${APP_PATH}/package*.json ./
+COPY ${APP_PATH}/gpackage*.json ./
 
 # Install the dependencies
 RUN npm install
