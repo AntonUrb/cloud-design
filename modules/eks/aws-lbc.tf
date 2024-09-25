@@ -45,7 +45,7 @@ resource "helm_release" "aws_lbc" {
   version    = "1.7.2"
 
   set {
-    name  = "clustername"
+    name  = "clusterName"
     value = aws_eks_cluster.eks.name
   }
 

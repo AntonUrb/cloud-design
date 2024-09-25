@@ -84,3 +84,6 @@ spec:
   storageClassName: gp2
   hostPath:
     path: /mnt/data/rabbit
+  claimRef:
+    namespace: default
+    name: rabbit-queue-rabbit-queue-0

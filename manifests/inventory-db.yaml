@@ -75,3 +75,6 @@ spec:
   storageClassName: gp2
   hostPath:
     path: /mnt/data/inventory
+  claimRef:
+    namespace: default
+    name: inventory-database-inventory-db-0

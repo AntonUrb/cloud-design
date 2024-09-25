@@ -74,3 +74,6 @@ spec:
   storageClassName: gp2
   hostPath:
     path: /mnt/data/billing
+  claimRef:
+    namespace: default
+    name: billing-database-billing-db-0
