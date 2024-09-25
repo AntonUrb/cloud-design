@@ -34,7 +34,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cloud-secrets
-                  key: DB_INVENTORY_NAME          
+                  key: DB_INVENTORY_NAME
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -51,18 +51,27 @@ spec:
           volumeMounts:
             - name: inventory-database
               mountPath: /var/lib/postgresql/data
-      volumes:
-        - name: inventory-database
-          persistentVolumeClaim:
-            claimName: inventory-database
+  volumeClaimTemplates:
+    - metadata:
+        name: inventory-database
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi
+        storageClassName: gp2
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
-  name: inventory-database
+  name: inventory-db-vol
 spec:
-  resources:
-    requests:
-      storage: 100Mi
+  capacity:
+    storage: 100Mi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gp2
+  hostPath:
+    path: /mnt/data/inventory
