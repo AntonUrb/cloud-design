@@ -8,7 +8,7 @@ resource "aws_subnet" "public" {
 
   tags = {
     "Name"                                             = "${var.env}-public-${var.az[count.index]}"
-    "kubernetes.io/role/internal-elb"                  = "1"
+    "kubernetes.io/role/elb"                           = "1"
     "kubernetes.io/cluster/${var.env}-${var.eks_name}" = "owned"
   }
 }
