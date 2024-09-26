@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.aws_region
-}
-
 module "vpc" {
   source = "./modules/vpc"
 
@@ -24,6 +20,8 @@ module "eks" {
   subnet_id = {
     value = module.vpc.private_subnet_ids # Accessing the output from the VPC module
   }
+
+  vpcID = module.vpc.vpcID
 }
 
 module "iam" {

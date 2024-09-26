@@ -23,3 +23,7 @@ variable "subnet_id" {
     value = list(string)
   })
 }
+
+variable "vpcID" {
+  type = string
+}

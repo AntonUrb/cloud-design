@@ -34,7 +34,7 @@ resource "aws_eks_node_group" "general" {
   scaling_config {
     desired_size = 1
     max_size     = 2
-    min_size     = 0
+    min_size     = 1
   }
 
   update_config {
@@ -62,4 +62,11 @@ resource "aws_eks_addon" "pod_identity" {
   cluster_name = aws_eks_cluster.eks.name
   addon_name = "eks-pod-identity-agent"
   addon_version = "v1.3.2-eksbuild.2"
+}
+
+resource "null_resource" "update_kubeconfig" {
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --region eu-north-1 --name staging-main-cluster"
+  }
+  depends_on = [ aws_eks_cluster.eks ]
 }

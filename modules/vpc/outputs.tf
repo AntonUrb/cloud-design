@@ -12,3 +12,8 @@ output "private_subnet_ids" {
   value = "${aws_subnet.private[*].id}"
   depends_on = [ aws_subnet.private ]
 }
+
+output "vpcID" {
+  description = "ID of the VPC"
+  value = aws_vpc.main.id
+}
