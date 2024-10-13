@@ -21,6 +21,14 @@ for question presented in the audit, please refer to the bottom of the readme.
 4. kubectl (see https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html to set up your kubectl to work with your cloud)
 5. Docker
 
+## Project structure
+
+The project consists of 3 micro services we made ourselves, API gateway(which routes the traffic to each app), billing-app(which handles everything billing related), movies-app(which handles everything movies related). Our project also has RabbitMQ and 2 postgres instances. All of the services run in Docker containers which only have the bare minimum software to run all the apps inorder to provide easier scaleability and lower costs.
+
+Our project leverages EKS(AWS Elastic Kubernetes service) for microservice deployment and scaling across multiple AZs(Availability Zones) for high availability. The use of API Gateway, Route 53, and ALB allows efficient handling of both internal and external traffic. Terraform and Helm simplify infrastructure management, while CloudWatch ensures comprehensive monitoring. Each component, including databases and messaging via RabbitMQ, is optimized for redundancy and fault tolerance.
+
+This architecture exemplifies best practices in cloud-native, microservices-based applications, balancing security, scalability, and maintainability that we could build in our first actual cloud based project.
+
 ## Running the project
 **!!!Warning!!!**
 
@@ -65,7 +73,7 @@ Can you describe your microservices application's AWS-based architecture and the
 - Our AWS-based architecture leverages EKS for microservice deployment across multiple AZs within a VPC, ensuring high availability and scalability. The use of API Gateway, Route 53, and ALB allows efficient handling of both internal and external traffic. Terraform and Helm simplify infrastructure management, while CloudWatch ensures comprehensive monitoring.
 
 How did you manage and optimize the cost of your AWS solution?
-- 
+- The main objective for us was to implement everything that was on the free tier of AWS and making sure everything worked, after that we gradually started adding more pieces to the puzzle that were priced and keeping an eye on the costs while running the project.
 
 What measures did you implement to ensure application security on AWS, and what AWS security best practices did you adhere to?
 - We used a certificate manager and gateways in subnets to ensure secure communication. We also made sure that each microservice is only able to interact with its own respective database and used encoded enviormental variables(secrets) to ensure that our sensitive info stays secret. 
@@ -80,13 +88,17 @@ How did you optimize Docker images for each microservice, and how did it influen
 - The Docker images were created on the most basic alpine linux base only used absolutely neccessary tools/dependencies that were require to run the applications, databases and queues which reduced the image size and build time.
 
 If you had to redo this project, what modifications would you make to your approach or the technologies you used?
-- 
+- With better knowledge of AWS services we would plan out our architecture better beforehand that being said, since it was the first time using AWS personally I think it was better to just start testing the services and how they work from the get-go. 
 
 How can your AWS solution be expanded or altered to cater to future requirements like adding new microservices or migrating to a different cloud provider?
 - Adding microservices will be as easy as creating the service itself and its kubernetes manifest, after that our solution makes it relatively simple to apply the changes by just kubectl to make the changes.
 
 What challenges did you face during the project and how did you address them?
-- 
+- First of the challanges we faced was setting up permissions to run and access the AWS cloud environment, since neither of us had done it before to make sure both of us could manage everything as neccesary. To fix the issue we did some research and looked at tutorials on how such feats could be accomplished.
+
+- Second challange we faced was using and setting up kubectl for cloud. Previously we had used kubernetes on VMs and local machines but to use it on cloud we had to configure kubectl to access the cloud servers. We fixed the issue by configuring credentials and API to the cloud.
+
+- Third challange was to figure out what services of the vast AWS services bundle we should use like for example EKS or ECS, to address this issue we read about the benefits of each service and industry best practises to make the best choice for our project, which in the end was EKS.
 
 How did you ensure your documentation's clarity and completeness, and what measures did you take to make it easily understandable and maintainable?
-- 
+- We tried to keep it as brief as possible while not leaving out anything important.
