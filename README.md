@@ -53,50 +53,65 @@ kubectl apply -f ./manifests
 ### End result
 ![kubernetes running](<img/Screenshot_from_2024-09-27_01-07-37.png>)
 
-## Answers to roleplays suggested questions
+## Answers to audit questions
 
 #### What is the cloud and its associated benefits?
+
 - "The cloud" refers to the use of remote servers hosted on the internet to store, manage, and process data, as opposed to local servers or personal computers.
 
 #### Why is deploying the solution in the cloud preferred over on-premises?
-- Instead of purchasing and maintaining physical hardware, cloud platforms offer a pay-as-you-go model. Cloud platforms also support automation tools for managing infrastructure, like Infrastructure as Code (IaC) using tools like Terraform or AWS CloudFormation. Cloud providers offer highly available infrastructure by distributing applications across multiple regions and availability zones, ensuring minimal downtime.
+
+- Instead of purchasing and maintaining physical hardware, cloud platforms offer a pay-as-you-go model. Cloud platforms also support automation tools for managing infrastructure, such as Infrastructure as Code (IaC) using tools like Terraform or AWS CloudFormation. Cloud providers offer highly available infrastructure by distributing applications across multiple regions and availability zones, ensuring minimal downtime.
 
 #### How would you differentiate between public, private, and hybrid cloud?
-- The public cloud is a cloud environment provided by third-party vendors over the internet and shared among multiple organizations like AWS, Azure, Google Cloud Platform. A private cloud is a cloud infrastructure that is dedicated to a single organization. The hybrid cloud combines both public and private cloud environments, allowing data and applications to move between them as needed.
+
+- The public cloud is a cloud environment provided by third-party vendors over the internet and shared among multiple organizations like AWS, Azure, and Google Cloud Platform. A private cloud is a cloud infrastructure that is dedicated to a single organization. The hybrid cloud combines both public and private cloud environments, allowing data and applications to move between them as needed.
 
 #### What drove your decision to select AWS for this project, and what factors did you consider?
-- It in the project requirement, also it is one of the most popular widely used, having knowledge and experience with it will definetly prove useful in the future.
+
+- It was in the project requirements. Also, AWS is one of the most popular and widely used cloud platforms. Having knowledge and experience with AWS will definitely prove useful in the future.
 
 #### Can you describe your microservices application's AWS-based architecture and the interaction between its components?
+
 - Our AWS-based architecture leverages EKS for microservice deployment across multiple AZs within a VPC, ensuring high availability and scalability. The use of API Gateway, Route 53, and ALB allows efficient handling of both internal and external traffic. Terraform and Helm simplify infrastructure management, while CloudWatch ensures comprehensive monitoring.
 
 #### How did you manage and optimize the cost of your AWS solution?
-- The main objective for us was to implement everything that was on the free tier of AWS and making sure everything worked, after that we gradually started adding more pieces to the puzzle that were priced and keeping an eye on the costs while running the project.
+
+- Our main objective was to implement everything within AWS’s free tier and ensure everything worked. After that, we gradually started adding more components, keeping an eye on costs as we ran the project.
 
 #### What measures did you implement to ensure application security on AWS, and what AWS security best practices did you adhere to?
-- We used a certificate manager and NAT gateways in public subnets with corresponding route tables set to communicate only outwards to ensure secure communication with the internet. We also made sure that each microservice is only able to interact with its own respective database and used encoded enviromental variables(secrets) to ensure that our sensitive info stays secret. 
+
+- We used a Certificate Manager and NAT gateways in public subnets with corresponding route tables set to communicate only outwards, ensuring secure communication with the internet. We also made sure that each microservice interacted only with its respective database and used encoded environment variables (secrets) to ensure that sensitive information remained secure.
 
 #### What AWS monitoring and logging tools did you utilize, and how did they assist in identifying and troubleshooting application issues?
--  Amazon CloudWatch is integrated into the architecture to monitor the performance of your EKS cluster, track metrics from the microservices, and generate logs. This helps in real-time performance monitoring and troubleshooting. A metrics server is also preset, to collect resource metrics (CPU, memory) from the Kubernetes cluster for auto-scaling and monitoring purposes.
+
+- Amazon CloudWatch is integrated into the architecture to monitor the performance of our EKS cluster, track metrics from the microservices, and generate logs. This helps with real-time performance monitoring and troubleshooting. A metrics server is also present to collect resource metrics (CPU, memory) from the Kubernetes cluster for auto-scaling and monitoring.
 
 #### Can you describe the AWS auto-scaling policies you implemented and how they help your application accommodate varying workloads?
-- We scaled our applications based on CPU usage of the server, so that every time the average CPU usage hit 60% we create a new replica of our application. Doing this ensures that our application scales according to demand for a smooth experience.
+
+- We scaled our applications based on CPU usage. Each time the average CPU usage hit 60%, a new replica of the application was created. This ensures that our application scales according to demand, ensuring a smooth experience.
 
 #### How did you optimize Docker images for each microservice, and how did it influence build times and image sizes?
-- The Docker images were created on the most basic alpine linux base only used absolutely neccessary tools/dependencies that were require to run the applications, databases and queues which reduced the image size and build time.
+
+- The Docker images were created on a minimal Alpine Linux base, using only the absolutely necessary tools and dependencies required to run the applications, databases, and queues. This reduced image size and build time.
 
 #### If you had to redo this project, what modifications would you make to your approach or the technologies you used?
-- Overall the setup is satisfactory, but it would be more even more optimal to use Nginx-Ingress-Controller instead of K8s Ingress for incoming and AWS ALB (Application Load Balancer [Layer 7]) as outgoing traffic, as it can act as both and is faster since it would employ an NLB (Network Load Balancer [Layer 4]).
+
+- Overall, the setup is satisfactory. However, it would be more optimal to use the NGINX Ingress Controller instead of K8s Ingress for incoming traffic and AWS ALB (Application Load Balancer [Layer 7]) for outgoing traffic. It would be faster since it would employ NLB (Network Load Balancer [Layer 4]).
 
 #### How can your AWS solution be expanded or altered to cater to future requirements like adding new microservices or migrating to a different cloud provider?
-- Adding microservices will be as easy as creating the service itself and its kubernetes manifest, after that our solution makes it relatively simple to apply the changes by just kubectl to make the changes.
+
+- Adding new microservices would be as simple as creating the service itself and its Kubernetes manifest. Our solution makes it relatively simple to apply the changes by using `kubectl` to make the updates.
 
 #### What challenges did you face during the project and how did you address them?
-- First of the challanges we faced was setting up permissions to run and access the AWS cloud environment, since neither of us had done it before to make sure both of us could manage everything as neccesary. To fix the issue we did some research and looked at tutorials on how such feats could be accomplished.
 
-- Second challange we faced was using and setting up kubectl for cloud. Previously we had used kubernetes on VMs and local machines but to use it on cloud we had to configure kubectl to access the cloud servers. We fixed the issue by configuring credentials and API to the cloud.
-
-- Third challange was to figure out what services of the vast AWS services bundle we should use like for example EKS or ECS, to address this issue we read about the benefits of each service and industry best practises to make the best choice for our project, which in the end was EKS.
+- The first challenge we faced was setting up permissions to access and manage the AWS cloud environment, as neither of us had done this before. We resolved this by researching and following tutorials to accomplish the task.
+    
+- The second challenge was setting up `kubectl` for the cloud. While we had used Kubernetes on VMs and local machines, configuring `kubectl` to work with the cloud required setting up credentials and an API to connect to the cloud servers.
+    
+- The third challenge was determining which AWS services to use from their vast offerings, such as whether to use EKS or ECS. To address this, we researched the benefits of each service and reviewed industry best practices to make the best choice for our project, which was EKS.
+    
 
 #### How did you ensure your documentation's clarity and completeness, and what measures did you take to make it easily understandable and maintainable?
-- We tried to keep it as brief as possible while not leaving out anything important.
+
+- We aimed to keep the documentation as concise as possible while ensuring that no important information was left out.
