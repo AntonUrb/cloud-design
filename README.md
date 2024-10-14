@@ -43,7 +43,7 @@ terraform plan
 ```
 Applying the project in the cloud.
 ```bash 
-terraform apply
+terraform apply --var-file=vars/stage.tfvars
 ```
 After applying the terraform you will need to spin up the kubernetes clusters by running the following command(ensure you are in root folder and have kubectl set up)
 ```bash
