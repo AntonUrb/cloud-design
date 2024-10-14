@@ -28,8 +28,13 @@ module "iam" {
   source = "./modules/iam"
 
   eks_cluster_name = module.eks.cluster_name
-  eks_name         = var.eks_name
   env              = var.env
+}
+
+module "cloudwatch" {
+  source = "./modules/cloudwatch"
+
+  eks_cluster_name = module.eks.cluster_name
 }
 
 terraform {
