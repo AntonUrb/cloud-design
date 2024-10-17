@@ -21,9 +21,9 @@ for question presented in the audit, please refer to the bottom of the readme.
 
 ## Project structure
 
-The project consists of 3 micro services we made ourselves, API gateway (which routes the traffic to each app), billing-app (which handles everything billing related), movies-app (which handles everything movies related). Our project also has RabbitMQ and 2 postgres instances. All of the services run in Docker containers which only have the bare minimum software to run all the apps inorder to provide easier scalability and lower costs.
+The project consists of 3 micro services, API gateway (which routes the traffic to each app), billing-app (which handles everything billing related), movies-app (which handles everything movies related). Our project also has RabbitMQ and 2 postgres instances. All of the services run in Docker containers which only have the bare minimum software to run all the apps inorder to provide easier scalability and lower costs.
 
-Our project leverages EKS (AWS Elastic Kubernetes service) for microservice deployment and scaling across multiple AZs (Availability Zones) for high availability. The use of API Gateway, Route 53, and ALB allows efficient handling of both internal and external traffic. Terraform and Helm simplify infrastructure management, while CloudWatch ensures comprehensive monitoring. Each component, including databases and messaging via RabbitMQ, is optimized for redundancy and fault tolerance.
+The project leverages EKS (AWS Elastic Kubernetes service) for microservice deployment and scaling across multiple AZs (Availability Zones) for high availability. The use of API Gateway, Route 53, and ALB allows efficient handling of both internal and external traffic. Terraform and Helm simplify infrastructure management, while CloudWatch ensures comprehensive monitoring. Each component, including databases and messaging via RabbitMQ, is optimized for redundancy and fault tolerance.
 
 This architecture exemplifies best practices in cloud-native, microservices-based applications, balancing security, scalability, and maintainability that we could build in our first actual cloud based project.
 
