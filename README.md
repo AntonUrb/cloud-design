@@ -7,10 +7,6 @@
 Anton
 Karlutska
 
-## Audit & Video
-01 GitHub audit link [https://github.com/01-edu/public/tree/master/subjects/devops/cloud-design/audit]
-for question presented in the audit, please refer to the bottom of the readme.
-
 ## Prerequisites
 
 1. Amazon account
