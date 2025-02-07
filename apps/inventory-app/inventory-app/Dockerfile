@@ -1,5 +1,5 @@
 # Use the penultimate stable version of Alpine as the base image
-FROM alpine:3.17
+FROM alpine:3.21.2
 
 # Install Node.js and npm
 RUN apk add --no-cache nodejs npm
